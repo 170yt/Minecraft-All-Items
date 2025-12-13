@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "x170.all_items.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "InventoryChangedCriterionMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+	}
+}
