@@ -4,9 +4,9 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 
 import java.io.IOException;
 
@@ -17,7 +17,7 @@ public class ItemTypeAdapter extends TypeAdapter<Item> {
             return null;
         }
         String str = reader.nextString();
-        return Registries.ITEM.get(Identifier.of(str));
+        return BuiltInRegistries.ITEM.getValue(Identifier.parse(str));
     }
 
     public void write(JsonWriter writer, Item value) throws IOException {

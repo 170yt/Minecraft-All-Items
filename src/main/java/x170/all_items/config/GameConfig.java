@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import x170.all_items.AllItems;
 
 import java.io.PrintWriter;
@@ -69,6 +69,7 @@ public class GameConfig {
         add(Items.BREEZE_SPAWN_EGG);
         add(Items.CAT_SPAWN_EGG);
         add(Items.CAMEL_SPAWN_EGG);
+        add(Items.CAMEL_HUSK_SPAWN_EGG);
         add(Items.CAVE_SPIDER_SPAWN_EGG);
         add(Items.CHICKEN_SPAWN_EGG);
         add(Items.COD_SPAWN_EGG);
@@ -98,8 +99,10 @@ public class GameConfig {
         add(Items.MAGMA_CUBE_SPAWN_EGG);
         add(Items.MOOSHROOM_SPAWN_EGG);
         add(Items.MULE_SPAWN_EGG);
+        add(Items.NAUTILUS_SPAWN_EGG);
         add(Items.OCELOT_SPAWN_EGG);
         add(Items.PANDA_SPAWN_EGG);
+        add(Items.PARCHED_SPAWN_EGG);
         add(Items.PARROT_SPAWN_EGG);
         add(Items.PHANTOM_SPAWN_EGG);
         add(Items.PIG_SPAWN_EGG);
@@ -140,6 +143,7 @@ public class GameConfig {
         add(Items.CREAKING_SPAWN_EGG);
         add(Items.ZOMBIE_SPAWN_EGG);
         add(Items.ZOMBIE_HORSE_SPAWN_EGG);
+        add(Items.ZOMBIE_NAUTILUS_SPAWN_EGG);
         add(Items.ZOMBIE_VILLAGER_SPAWN_EGG);
         add(Items.ZOMBIFIED_PIGLIN_SPAWN_EGG);
     }};

@@ -2,6 +2,8 @@
 
 Collect all items in Minecraft, one at a time.
 
+![All Items HUD](images/All-Items-HUD.png)<br>
+
 The mod randomly selects an item from all obtainable items and displays it in the bossbar.
 Players must find and collect that item before moving on to the next one.
 The mod is multiplayer compatible and designed to be played on a multiplayer server, but can also be played without a server.
