@@ -2,8 +2,11 @@ package x170.all_items.game;
 
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.ChatFormatting;
+import net.minecraft.data.AtlasIds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.objects.AtlasSprite;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
@@ -12,8 +15,10 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.BossEvent;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import x170.all_items.AllItems;
 
 import java.util.ArrayList;
@@ -73,8 +78,8 @@ public abstract class GameManager {
     public static void onGameFinished() {
         Timer.pause();
 
-        bossBar.setProgress(1.0f);
         bossBar.setName(Component.literal("All Items - Completed!").withStyle(ChatFormatting.GOLD));
+        bossBar.setProgress(1.0f);
 
         playSoundToAllPlayers(SoundEvents.ENDER_DRAGON_DEATH);
 
@@ -112,15 +117,17 @@ public abstract class GameManager {
             additionalInfo = " (" + activeItemId.replace("minecraft:music_disc_", "").replace("_", " ") + ")";
         }
 
+        MutableComponent bossBarName = Component.literal("");
+        if (AllItems.CONFIG.showIconInBossBar) {
+            bossBarName.append(getItemSprite(AllItems.CONFIG.activeItem))
+                    .append(Component.literal(" "));
+        }
+        bossBarName.append(Component.translatable(AllItems.CONFIG.activeItem.getDescriptionId()))
+                .append(Component.literal(additionalInfo))
+                .append(Component.literal(" [" + (AllItems.CONFIG.obtainedItems.size()) + "/" + (AllItems.CONFIG.obtainedItems.size() + unobtainedItems.size()) + "]"));
+
+        bossBar.setName(bossBarName);
         bossBar.setProgress((float) AllItems.CONFIG.obtainedItems.size() / (AllItems.CONFIG.obtainedItems.size() + unobtainedItems.size()));
-        bossBar.setName(
-                Component.translatable(AllItems.CONFIG.activeItem.getDescriptionId())
-                        .append(Component.literal(additionalInfo))
-                        .append(Component.literal(" [" + (AllItems.CONFIG.obtainedItems.size()) + "/" + (AllItems.CONFIG.obtainedItems.size() + unobtainedItems.size()) + "]"))
-//                        .append(Component.object(new AtlasSprite(AtlasIds.BLOCKS, Identifier.parse("block/fire_0"))))  // Display icon
-//                        .append(Component.object(new AtlasSprite(AtlasIds.ITEMS, Identifier.parse("item/pink_bundle"))))  // Display icon
-//                        .append(Component.literal(" "))
-        );
     }
 
     private static void playSoundToAllPlayers(SoundEvent soundEvent) {
@@ -135,5 +142,28 @@ public abstract class GameManager {
         AllItems.SERVER.getPlayerList().getPlayers().forEach(
                 player -> player.displayClientMessage(text, true)
         );
+    }
+
+    private static Component getItemSprite(Item item) {
+        // Currently only works for items in the "minecraft" namespace
+        if (!item.toString().startsWith("minecraft:")) {
+            return Component.literal("");
+        }
+
+        String itemId = item.toString().replace("minecraft:", "");
+
+        if (item instanceof BlockItem) {
+            // Unfortunately a lot of block item textures have special names...
+            return Component.object(new AtlasSprite(AtlasIds.BLOCKS, Identifier.parse("block/" + itemId)));
+        } else {
+            // Special cases
+            if (item.equals(Items.CLOCK)) { itemId = "clock_00"; }
+            else if (item.equals(Items.COMPASS)) { itemId = "compass_20"; }
+            else if (item.equals(Items.CROSSBOW)) { itemId = "crossbow_standby"; }
+            else if (item.equals(Items.RECOVERY_COMPASS)) { itemId = "recovery_compass_20"; }
+            else if (item.equals(Items.TIPPED_ARROW)) { itemId = "arrow"; }
+
+            return Component.object(new AtlasSprite(AtlasIds.ITEMS, Identifier.parse("item/" + itemId)));
+        }
     }
 }

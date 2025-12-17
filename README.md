@@ -18,6 +18,24 @@ The mod is multiplayer compatible and designed to be played on a multiplayer ser
 
 - `/timer` - Pause or resume the game timer
 
+## Config
+
+The mod saves all progress in a config file located at `config/all-items.json`.
+The config file contains the following options:
+
+- **`showIconInBossBar` (boolean, default: false)**<br>
+  Show the item icon in the bossbar.
+  This feature is experimental and uses minecraft's built-in atlas object type to render the icon, which currently does
+  not work for all items.
+- **`timerSeconds` (integer)**<br>
+  Stores the timer value in seconds.
+- **`activeItem` (string)**<br>
+  Stores the current active item id.
+- **`obtainedItems` (array of strings)**<br>
+  Stores the list of obtained item ids.
+- **`unobtainableItems` (array of strings)**<br>
+  Stores the list of unobtainable item ids.
+
 ## FAQ
 
 - **How can I skip the current Item?**<br>
