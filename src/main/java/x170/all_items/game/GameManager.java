@@ -2,23 +2,24 @@ package x170.all_items.game;
 
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
 import net.minecraft.data.AtlasIds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.objects.AtlasSprite;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.server.permissions.Permissions;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.BossEvent;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import x170.all_items.AllItems;
 
 import java.util.ArrayList;
@@ -52,13 +53,14 @@ public abstract class GameManager {
     public static void onPlayerJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
         bossBar.addPlayer(handler.player);
 
-        // Show a warning message if the timer is paused
-        if (Timer.isPaused()) handler.player.displayClientMessage(
-                Component.literal("The timer is paused!\n Use ").withStyle(ChatFormatting.RED)
-                        .append(Component.literal("/timer").withStyle(ChatFormatting.YELLOW))  // .setStyle(Style.EMPTY.withClickEvent(new ClickEvent.SuggestCommand("/timer"))))
-                        .append(Component.literal(" to unpause it").withStyle(ChatFormatting.RED)),
-                false
-        );
+        // Show a warning message if the timer is paused and the player has permission to unpause it
+        if (Timer.isPaused() && handler.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
+            handler.player.displayClientMessage(
+                    Component.literal("The timer is paused!\n Use ").withStyle(ChatFormatting.RED)
+                            .append(Component.literal("/timer").withStyle(ChatFormatting.YELLOW))  // .setStyle(Style.EMPTY.withClickEvent(new ClickEvent.SuggestCommand("/timer"))))
+                            .append(Component.literal(" to unpause it").withStyle(ChatFormatting.RED)),
+                    false
+            );
     }
 
     public static void onItemObtained(Item obtainedItem) {
@@ -68,7 +70,9 @@ public abstract class GameManager {
 
         playSoundToAllPlayers(SoundEvents.PLAYER_LEVELUP);
         AllItems.SERVER.getPlayerList().broadcastSystemMessage(
-                Component.literal("+ ").append(Component.translatable(obtainedItem.getDescriptionId())).withStyle(ChatFormatting.GREEN),
+                Component.literal("§a+ §r")
+                        .append(getItemSprite(obtainedItem))
+                        .append(Component.translatable(obtainedItem.getDescriptionId()).withStyle(ChatFormatting.GREEN)),
                 false
         );
 
@@ -117,12 +121,8 @@ public abstract class GameManager {
             additionalInfo = " (" + activeItemId.replace("minecraft:music_disc_", "").replace("_", " ") + ")";
         }
 
-        MutableComponent bossBarName = Component.literal("");
-        if (AllItems.CONFIG.showIconInBossBar) {
-            bossBarName.append(getItemSprite(AllItems.CONFIG.activeItem))
-                    .append(Component.literal(" "));
-        }
-        bossBarName.append(Component.translatable(AllItems.CONFIG.activeItem.getDescriptionId()))
+        Component bossBarName = getItemSprite(AllItems.CONFIG.activeItem).copy()
+                .append(Component.translatable(AllItems.CONFIG.activeItem.getDescriptionId()))
                 .append(Component.literal(additionalInfo))
                 .append(Component.literal(" [" + (AllItems.CONFIG.obtainedItems.size()) + "/" + (AllItems.CONFIG.obtainedItems.size() + unobtainedItems.size()) + "]"));
 
@@ -131,9 +131,22 @@ public abstract class GameManager {
     }
 
     private static void playSoundToAllPlayers(SoundEvent soundEvent) {
-        AllItems.SERVER.getPlayerList().getPlayers().forEach(player -> {
-            player.level().playSound(null, player.blockPosition(), soundEvent, SoundSource.MASTER);
-        });
+        AllItems.SERVER.getPlayerList().getPlayers().forEach(player -> playSoundToPlayer(player, soundEvent));
+    }
+
+    public static void playSoundToPlayer(ServerPlayer player, SoundEvent soundEvent) {
+        player.connection.send(
+                new ClientboundSoundPacket(
+                        Holder.direct(soundEvent),
+                        SoundSource.MASTER,
+                        player.getX(),
+                        player.getY(),
+                        player.getZ(),
+                        1.0f,
+                        1.0f,
+                        player.level().random.nextLong()
+                )
+        );
     }
 
     private static void showTimerToAllPlayers() {
@@ -145,25 +158,9 @@ public abstract class GameManager {
     }
 
     private static Component getItemSprite(Item item) {
-        // Currently only works for items in the "minecraft" namespace
-        if (!item.toString().startsWith("minecraft:")) {
-            return Component.literal("");
-        }
-
-        String itemId = item.toString().replace("minecraft:", "");
-
-        if (item instanceof BlockItem) {
-            // Unfortunately a lot of block item textures have special names...
-            return Component.object(new AtlasSprite(AtlasIds.BLOCKS, Identifier.parse("block/" + itemId)));
-        } else {
-            // Special cases
-            if (item.equals(Items.CLOCK)) { itemId = "clock_00"; }
-            else if (item.equals(Items.COMPASS)) { itemId = "compass_20"; }
-            else if (item.equals(Items.CROSSBOW)) { itemId = "crossbow_standby"; }
-            else if (item.equals(Items.RECOVERY_COMPASS)) { itemId = "recovery_compass_20"; }
-            else if (item.equals(Items.TIPPED_ARROW)) { itemId = "arrow"; }
-
-            return Component.object(new AtlasSprite(AtlasIds.ITEMS, Identifier.parse("item/" + itemId)));
-        }
+        if (!AllItems.CONFIG.showIcons) return Component.literal("");
+        // Uses a resource pack that adds all missing sprites to the items atlas
+        Identifier identifier = Identifier.parse(item.toString().replace(":", ":item/"));
+        return Component.object(new AtlasSprite(AtlasIds.ITEMS, identifier)).append(" ");
     }
 }

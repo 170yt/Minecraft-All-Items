@@ -18,7 +18,7 @@ public class GameConfig {
 
     // Configuration fields
     @Expose
-    public boolean showIconInBossBar = false;
+    public boolean showIcons = false;
     @Expose
     public int timerSeconds = 0;
     @Expose
@@ -162,7 +162,7 @@ public class GameConfig {
                 .create();
         try {
             GameConfig config = gson.fromJson(Files.readString(PATH), this.getClass());
-            this.showIconInBossBar = config.showIconInBossBar;
+            this.showIcons = config.showIcons;
             this.timerSeconds = config.timerSeconds;
             this.activeItem = config.activeItem;
             this.obtainedItems = config.obtainedItems;

@@ -7,23 +7,15 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.permissions.PermissionCheck;
-import net.minecraft.server.permissions.Permissions;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import x170.all_items.AllItems;
+import x170.all_items.game.GameManager;
 import x170.all_items.game.Timer;
 
 public class TimerCommand {
-    public static final PermissionCheck PERMISSION_CHECK;
-
-    static {
-        PERMISSION_CHECK = new PermissionCheck.Require(Permissions.COMMANDS_GAMEMASTER);
-    }
-
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext, Commands.CommandSelection commandSelection) {
         dispatcher.register(Commands.literal("timer")
-                .requires(Commands.hasPermission(PERMISSION_CHECK))
+                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .executes(context -> executeTimer(context.getSource()))
         );
     }
@@ -33,7 +25,8 @@ public class TimerCommand {
         source.sendSuccess(() -> Component.literal("Timer " + (isPaused ? "paused" : "resumed")).withStyle(isPaused ? ChatFormatting.RED : ChatFormatting.GREEN), true);
 
         ServerPlayer player = source.getPlayer();
-        if (player != null) player.level().playSound(null, player.blockPosition(), SoundEvents.UI_TOAST_IN, SoundSource.MASTER);
+        if (player != null)
+            GameManager.playSoundToPlayer(player, SoundEvents.UI_TOAST_IN);
 
         AllItems.CONFIG.save();
         return 1;

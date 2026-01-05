@@ -23,10 +23,9 @@ The mod is multiplayer compatible and designed to be played on a multiplayer ser
 The mod saves all progress in a config file located at `config/all-items.json`.
 The config file contains the following options:
 
-- **`showIconInBossBar` (boolean, default: false)**<br>
-  Show the item icon in the bossbar.
-  This feature is experimental and uses minecraft's built-in atlas object type to render the icon, which currently does
-  not work for all items.
+- **`showIcons` (boolean, default: false)**<br>
+  Show item icons in the bossbar and in chat messages.
+  This feature requires the [All-Icons](https://github.com/170yt/Minecraft-All-Icons-Resource-Pack) resource pack.
 - **`timerSeconds` (integer)**<br>
   Stores the timer value in seconds.
 - **`activeItem` (string)**<br>
