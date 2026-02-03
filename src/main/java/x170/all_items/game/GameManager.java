@@ -124,10 +124,14 @@ public abstract class GameManager {
         Component bossBarName = getItemSprite(AllItems.CONFIG.activeItem).copy()
                 .append(Component.translatable(AllItems.CONFIG.activeItem.getDescriptionId()))
                 .append(Component.literal(additionalInfo))
-                .append(Component.literal(" [" + (AllItems.CONFIG.obtainedItems.size()) + "/" + (AllItems.CONFIG.obtainedItems.size() + unobtainedItems.size()) + "]"));
+                .append(Component.literal(" [" + AllItems.CONFIG.obtainedItems.size() + "/" + getTotalItemCount() + "]"));
 
         bossBar.setName(bossBarName);
-        bossBar.setProgress((float) AllItems.CONFIG.obtainedItems.size() / (AllItems.CONFIG.obtainedItems.size() + unobtainedItems.size()));
+        bossBar.setProgress((float) AllItems.CONFIG.obtainedItems.size() / getTotalItemCount());
+    }
+
+    public static int getTotalItemCount() {
+        return AllItems.CONFIG.obtainedItems.size() + unobtainedItems.size() + (AllItems.CONFIG.activeItem != null ? 1 : 0);
     }
 
     private static void playSoundToAllPlayers(SoundEvent soundEvent) {
@@ -151,7 +155,7 @@ public abstract class GameManager {
 
     private static void showTimerToAllPlayers() {
         // Show the timer in every player's actionbar
-        Component text = Component.literal(Timer.getTimeString()).withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD);
+        Component text = Component.literal(Timer.getTimeString()).withStyle(Timer.isPaused() ? ChatFormatting.RED : ChatFormatting.GOLD, ChatFormatting.BOLD);
         AllItems.SERVER.getPlayerList().getPlayers().forEach(
                 player -> player.displayClientMessage(text, true)
         );

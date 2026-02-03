@@ -9,6 +9,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import x170.all_items.command.AllItemsCommand;
 import x170.all_items.command.TimerCommand;
 import x170.all_items.config.GameConfig;
 import x170.all_items.event.PlayerInventoryChangedCallback;
@@ -28,10 +29,12 @@ public class AllItems implements ModInitializer {
                 BuiltInRegistries.ITEM.stream()
                         .filter(item -> !CONFIG.obtainedItems.contains(item))
                         .filter(item -> !CONFIG.unobtainableItems.contains(item))
+                        .filter(item -> !item.equals(CONFIG.activeItem))
                         .toList()
         );
 
         CommandRegistrationCallback.EVENT.register(TimerCommand::register);
+        CommandRegistrationCallback.EVENT.register(AllItemsCommand::register);
         PlayerInventoryChangedCallback.EVENT.register(GameManager::checkItem);
 
         ServerLifecycleEvents.SERVER_STARTED.register(this::onServerStarted);

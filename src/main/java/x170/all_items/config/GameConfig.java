@@ -36,6 +36,7 @@ public class GameConfig {
         add(Items.COMMAND_BLOCK_MINECART);
         add(Items.COMMAND_BLOCK);
         add(Items.DEBUG_STICK);
+        add(Items.DIRT_PATH);
         add(Items.END_PORTAL_FRAME);
         add(Items.FARMLAND);
         add(Items.FROGSPAWN);

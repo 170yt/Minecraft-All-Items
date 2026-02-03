@@ -16,7 +16,12 @@ The mod is multiplayer compatible and designed to be played on a multiplayer ser
 
 ## Commands
 
+- `/all-items` - Show all obtained items in a custom dialog (see below)
 - `/timer` - Pause or resume the game timer
+
+## All Items Dialog
+
+![All Items Dialog](images/All-Items-Dialog.png)<br>
 
 ## Config
 
