@@ -18,6 +18,7 @@ public abstract class Timer {
 
     public static void resume() {
         paused = false;
+        AllItems.CONFIG.save();
     }
 
     public static boolean toggle() {
