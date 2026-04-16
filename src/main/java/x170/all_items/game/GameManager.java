@@ -23,9 +23,11 @@ import net.minecraft.world.item.ItemStack;
 import x170.all_items.AllItems;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public abstract class GameManager {
     private static final ServerBossEvent bossBar = new ServerBossEvent(
+            UUID.randomUUID(),
             Component.literal("All Items"),
             ServerBossEvent.BossBarColor.WHITE,
             BossEvent.BossBarOverlay.PROGRESS
@@ -44,10 +46,7 @@ public abstract class GameManager {
         }
 
         // Auto-save every 5 minutes
-        if (onceEveryFiveMinutes) {
-            AllItems.CONFIG.save();
-            // Aoc.LOGGER.info("Auto-saved the config file");
-        }
+        if (onceEveryFiveMinutes) AllItems.CONFIG.save();
     }
 
     public static void onPlayerJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
@@ -55,11 +54,10 @@ public abstract class GameManager {
 
         // Show a warning message if the timer is paused and the player has permission to unpause it
         if (Timer.isPaused() && handler.player.permissions().hasPermission(Permissions.COMMANDS_GAMEMASTER))
-            handler.player.displayClientMessage(
+            handler.player.sendSystemMessage(
                     Component.literal("The timer is paused!\n Use ").withStyle(ChatFormatting.RED)
                             .append(Component.literal("/timer").withStyle(ChatFormatting.YELLOW))  // .setStyle(Style.EMPTY.withClickEvent(new ClickEvent.SuggestCommand("/timer"))))
-                            .append(Component.literal(" to unpause it").withStyle(ChatFormatting.RED)),
-                    false
+                            .append(Component.literal(" to unpause it").withStyle(ChatFormatting.RED))
             );
     }
 
@@ -104,7 +102,7 @@ public abstract class GameManager {
         if (AllItems.CONFIG.activeItem == null && !unobtainedItems.isEmpty()) {
             // Set the active item to a random unobtained item
             AllItems.CONFIG.activeItem = unobtainedItems.remove(
-                    AllItems.SERVER.overworld().random.nextInt(unobtainedItems.size())
+                    AllItems.SERVER.overworld().getRandom().nextInt(unobtainedItems.size())
             );
             AllItems.CONFIG.save();
         }
@@ -148,7 +146,7 @@ public abstract class GameManager {
                         player.getZ(),
                         1.0f,
                         1.0f,
-                        player.level().random.nextLong()
+                        player.level().getRandom().nextLong()
                 )
         );
     }
@@ -157,7 +155,7 @@ public abstract class GameManager {
         // Show the timer in every player's actionbar
         Component text = Component.literal(Timer.getTimeString()).withStyle(Timer.isPaused() ? ChatFormatting.RED : ChatFormatting.GOLD, ChatFormatting.BOLD);
         AllItems.SERVER.getPlayerList().getPlayers().forEach(
-                player -> player.displayClientMessage(text, true)
+                player -> player.sendSystemMessage(text, true)
         );
     }
 

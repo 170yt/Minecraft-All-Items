@@ -49,7 +49,7 @@ public class AllItemsCommand {
     private static String buildItemDialogJson(ArrayList<Item> items) {
         StringBuilder bodyBuilder = new StringBuilder();
 
-        for (int i = 0; i < items.size(); i++) {
+        for (int i = items.size() - 1; i >= 0 ; i--) {
             Item item = items.get(i);
 
             bodyBuilder.append("""
