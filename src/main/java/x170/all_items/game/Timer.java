@@ -18,6 +18,7 @@ public abstract class Timer {
 
     public static void resume() {
         paused = false;
+        AllItems.CONFIG.save();
     }
 
     public static boolean toggle() {
@@ -37,10 +38,7 @@ public abstract class Timer {
     public static String getTimeString() {
         int time = getTimeSeconds();
         if (time == 0) return "0s";
-
-        String timeString = formatTime(time, true);
-//        if (paused) timeString += " (paused)";
-        return timeString;
+        return formatTime(time, true);
     }
 
     public static String formatTime(int time, boolean showSeconds) {

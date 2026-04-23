@@ -15,7 +15,7 @@ import x170.all_items.game.Timer;
 public class TimerCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext commandBuildContext, Commands.CommandSelection commandSelection) {
         dispatcher.register(Commands.literal("timer")
-                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .requires(Commands.hasPermission(AllItems.CONFIG.timerCommandRequiresOperator ? Commands.LEVEL_GAMEMASTERS : Commands.LEVEL_ALL))
                 .executes(context -> executeTimer(context.getSource()))
         );
     }
@@ -28,7 +28,6 @@ public class TimerCommand {
         if (player != null)
             GameManager.playSoundToPlayer(player, SoundEvents.UI_TOAST_IN);
 
-        AllItems.CONFIG.save();
         return 1;
     }
 }

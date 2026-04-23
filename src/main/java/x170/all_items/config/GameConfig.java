@@ -20,6 +20,8 @@ public class GameConfig {
     @Expose
     public boolean showIcons = false;
     @Expose
+    public boolean timerCommandRequiresOperator = true;
+    @Expose
     public int timerSeconds = 0;
     @Expose
     public Item activeItem = null;
@@ -57,6 +59,8 @@ public class GameConfig {
         add(Items.SPAWNER);
         add(Items.STRUCTURE_BLOCK);
         add(Items.STRUCTURE_VOID);
+        add(Items.SUSPICIOUS_GRAVEL);
+        add(Items.SUSPICIOUS_SAND);
         add(Items.TEST_BLOCK);
         add(Items.TEST_INSTANCE_BLOCK);
         add(Items.TRIAL_SPAWNER);
@@ -164,6 +168,7 @@ public class GameConfig {
         try {
             GameConfig config = gson.fromJson(Files.readString(PATH), this.getClass());
             this.showIcons = config.showIcons;
+            this.timerCommandRequiresOperator = config.timerCommandRequiresOperator;
             this.timerSeconds = config.timerSeconds;
             this.activeItem = config.activeItem;
             this.obtainedItems = config.obtainedItems;

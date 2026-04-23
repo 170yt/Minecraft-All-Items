@@ -31,6 +31,8 @@ The config file contains the following options:
 - **`showIcons` (boolean, default: false)**<br>
   Show item icons in the bossbar and in chat messages.
   This feature requires the [All-Icons](https://github.com/170yt/Minecraft-All-Icons-Resource-Pack) resource pack.
+- **`timerCommandRequiresOperator` (boolean, default: true)**<br>
+  Whether the `/timer` command requires operator permissions.
 - **`timerSeconds` (integer)**<br>
   Stores the timer value in seconds.
 - **`activeItem` (string)**<br>
